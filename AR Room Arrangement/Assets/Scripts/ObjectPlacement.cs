@@ -7,30 +7,21 @@ using TMPro;
 
 
 [RequireComponent(typeof(ARRaycastManager))]
-public class MeasureDistances : MonoBehaviour
+public class ObjectPlacement : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("Instantiates this prefab on a plane at the touch location.")]
-    GameObject m_PlacedPrefab;
 
+    public static ObjectPlacement instance;
 
-    public GameObject placedPrefab
-    {
-        get { return m_PlacedPrefab; }
-        set { m_PlacedPrefab = value; }
-    }
+    public GameObject placedPrefab;
+
     public GameObject spawnedObject { get; private set; }
     public Camera FirstPersonCamera;
-    public GameObject pointPrefab;
-    public GameObject linePrefab;
-    public TMP_Text textPrefab;
-    public Canvas parent;
-    public List<GameObject> points = new List<GameObject>();
-    public List<TMP_Text> distances = new List<TMP_Text>();
-    public TMP_Text totalDistance;
     void Awake()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
+        instance = this;
     }
     bool TryGetTouchPosition(out Vector2 touchPosition)
     {
@@ -55,9 +46,14 @@ public class MeasureDistances : MonoBehaviour
         if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
         {
             var hitPose = s_Hits[0].pose;
-            spawnedObject = Instantiate(m_PlacedPrefab, hitPose.position, hitPose.rotation);
-            points.Add(spawnedObject);
+            spawnedObject = Instantiate(placedPrefab, hitPose.position, hitPose.rotation);
         }
+
+        //if(Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log(placedPrefab.name);
+        //    Instantiate(placedPrefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        //}    
     }
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
     ARRaycastManager m_RaycastManager;
